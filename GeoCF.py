@@ -9,8 +9,9 @@ class GeoCF(object):
     def __init__(self, algo):
         self.grank = {}
         self.algo = algo
+        self.readZip()
 
-    def readZip(self, filename):
+    def readZip(self, filename='movielens/u.user'):
         self.uzip = {}
         with open(filename) as f:
             for line in f.readlines():
@@ -23,32 +24,41 @@ class GeoCF(object):
         #     num = None
         z = self.uzip[userid][:num]
         return [key for key, value in self.uzip.items()
-                if userid is not key and value[:num] is z]
+                if value[:num] == z]
         # return self.uzip[userid][:num]
 
     def getSubTrain(self, train, zipList):
         sub = {}
         for z in zipList:
-            if z in train:
-                sub.setdefault(z, train[z])
+            sub[z] = train[z]
         return sub
 
-    def rankCombine(self, train):
-        W = self.algo.Similarity(train)
-        rank = self.algo.Recommend('1', train, W)
-        print(sorted(rank.items(), key=operator.itemgetter(1), reverse=True))
-        # self.grank = dict(Counter(self.grank) + Counter(rank))
+    def rankCombine(self, ranklist, rank):
+        # W = self.algo.Similarity(train)
+        # rank = self.algo.Recommend('1', train, W)
+        # print(sorted(rank.items(), key=operator.itemgetter(1), reverse=True))
+        return dict(Counter(ranklist) + Counter(rank))
 
     def geoCalculate(self, weight):
         pass
 
-    def recommend(self, user, train, W):
+    def recommend(self, user, train):
+        ranklist = {}
         for i in range(4):
-            ziplist = self.getZipList(user, i)
+
+            zipList = self.getZipList(user, i)
             subtrain = self.getSubTrain(train, zipList)
             W = self.algo.Similarity(subtrain)
-            rank = c.Recommend('3', subtrain, W)
-            self.resultCombine(rank)
+            rank = self.algo.Recommend(user, subtrain, W)
+            ranklist = self.rankCombine(ranklist, rank)
+        return ranklist
+
+    def recommendation(self, users, train):
+        result = {}
+        for u in users.keys():
+            ranklist = self.recommend(u, train)
+            result[u] = ranklist
+        return result
 
 
 # obj = GeoCF()

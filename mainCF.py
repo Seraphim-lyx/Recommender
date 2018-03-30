@@ -14,6 +14,7 @@ import random
 import Evaluation
 import LFM
 import operator
+import json
 
 
 import imp
@@ -28,10 +29,9 @@ imp.reload(LFM)
 imp.reload(GeoCF)
 
 
-def readData():
+def readData(filename):
     data = []
-    fileName = 'movielens/u2.base'
-    fr = open(fileName, 'r')
+    fr = open(filename, 'r')
     for line in fr.readlines():
         lineArr = line.strip().split()
         data.append([lineArr[0], lineArr[1], lineArr[2], lineArr[3]])
@@ -62,8 +62,20 @@ def transform(oriData):
     return ret
 
 
+def output(result):
+    with open('output.txt', 'w') as f:
+        f.write(json.dumps(result, indent=2))
+
+    f.close()
+
+
 if __name__ == '__main__':
-    data = readData()
+    data = readData('movielens/ua.base')
+    train = transform(data)
+
+    data = readData('movielens/ua.test')
+    test = transform(data)
+
     numFlod = 5
     precision = 0
     recall = 0
@@ -71,7 +83,7 @@ if __name__ == '__main__':
     popularity = 0
     # for i in range(0, numFlod):
     # [oriTrain, oriTest] = SplitData(data, numFlod, 1, 0)
-    train = transform(data)
+
     # test = transform(oriTest)
     # print(len(train))
     # print(len(sorted(train)))
@@ -100,14 +112,18 @@ if __name__ == '__main__':
     # W = ItemTimeCF.ItemSimilarity(train)
     # rank = ItemTimeCF.Recommend('1', train, W)
     # print(sorted(rank.items(), key=operator.itemgetter(1), reverse=True))
-    obj = GeoCF.GeoCF(UserTimeCF)
-    obj.rankCombine(train)
-    # W = UserTimeCF.Similarity(train)
-    # rank = UserTimeCF.Recommend('3', train, W)
+
+    W = UserTimeCF.Similarity(train)
+    # rank = UserTimeCF.Recommend('1', train, W)
     # rank = ItemTimeCF.Recommend('4', train, W)
     # print(len(rank))
     # print(sorted(rank.items(), key=operator.itemgetter(1), reverse=True))
-    # result = UserTimeCF.Recommendation(test.keys(), train, W)
+
+    result = UserCF_IIF.Recommendation(test.keys(), train, W)
+    print(Evaluation.Recall(train, test, result))
+    print(Evaluation.Precision(train, test, result))
+    # print(len(result))
+    output(result)
 
     #     [P, Q] = LFM.LatentFactorModel(train, 100, 30, 0.02, 0.01)
     #     rank = LFM.Recommend('2', train, P, Q)
@@ -130,3 +146,7 @@ if __name__ == '__main__':
     #       (precision * 100, recall * 100, coverage * 100, popularity))
     # # 运行完标志
     # print('Done!')
+
+    # obj = GeoCF.GeoCF(UserTimeCF)
+    # rank = obj.recommend('1', train)
+    # print(sorted(rank.items(), key=operator.itemgetter(1), reverse=True))
