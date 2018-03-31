@@ -1,7 +1,5 @@
 from collections import Counter
 import operator
-a = {}
-a.setdefault('1', 1)
-a.setdefault('2', 2)
-a['3'] = 2
-print(len(a))
+a = {'1': 4, '2': 3, '3': 5, '0': 1}
+# a = {key: value/m for key, value in a.items()}
+print(a)

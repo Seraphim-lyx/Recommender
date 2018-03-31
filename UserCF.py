@@ -65,11 +65,11 @@ def Recommend(user, train, W, K=3):
     return rank
 
 
-def Recommendation(users, train, W, K=3):
+def Recommendation(users, train, W, top=10, K=3):
     result = dict()
     for user in users:
         rank = Recommend(user, train, W, K)
         R = sorted(rank.items(), key=operator.itemgetter(1),
-                   reverse=True)
+                   reverse=True)[:top]
         result[user] = R
     return result

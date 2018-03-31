@@ -20,7 +20,7 @@ def Similarity(train):
     # calculate co-rated items between users
     C = dict()
     N = dict()
-    alpha = 0.0001
+    alpha = 0.000000001
     for i, users in item_users.items():
         # print(users)
         for u, ut in users.items():
@@ -56,11 +56,11 @@ def Recommend(user, train, W, K=80):
     return rank
 
 
-def Recommendation(users, train, W, K=80):
+def Recommendation(users, train, W, top, K=80):
     result = dict()
     for user in users:
         rank = Recommend(user, train, W, K)
         R = sorted(rank.items(), key=operator.itemgetter(1),
-                   reverse=True)[:20]
+                   reverse=True)[:top]
         result[user] = R
     return result

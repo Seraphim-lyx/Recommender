@@ -42,22 +42,23 @@ class GeoCF(object):
     def geoCalculate(self, weight):
         pass
 
-    def recommend(self, user, train):
+    def recommend(self, user, train, top, k):
         ranklist = {}
         for i in range(4):
 
             zipList = self.getZipList(user, i)
             subtrain = self.getSubTrain(train, zipList)
             W = self.algo.Similarity(subtrain)
-            rank = self.algo.Recommend(user, subtrain, W)
+            rank = self.algo.Recommend(user, subtrain, W, top, k)
             ranklist = self.rankCombine(ranklist, rank)
         return ranklist
 
-    def recommendation(self, users, train):
+    def recommendation(self, users, train, top=10, k=3):
         result = {}
         for u in users.keys():
-            ranklist = self.recommend(u, train)
-            result[u] = ranklist
+            ranklist = self.recommend(u, train, top, k)
+            result[u] = sorted(ranklist.items(), key=operator.itemgetter(1),
+                               reverse=True)[:top]
         return result
 
 

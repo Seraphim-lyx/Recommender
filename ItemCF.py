@@ -7,7 +7,7 @@ import math
 import operator
 
 
-def ItemSimilarity(train):
+def Similarity(train):
     # calculate co-rated users between items
     C = dict()
     N = dict()
@@ -23,10 +23,21 @@ def ItemSimilarity(train):
                 C[i][j] += 1
 
     # calculate finial similarity matrix W
+
     W = C.copy()
     for i, related_items in C.items():
         for j, cij in related_items.items():
             W[i][j] = cij / math.sqrt(N[i] * N[j])
+
+        m = max(W[i].values())
+
+        for j in W[i].keys():
+            W[i][j] = W[i][j] / m
+
+    # for i, j in W.items():
+    #     for k, w in j.items():
+    #         W[i][k] = w / m
+
     return W
 
 
@@ -63,11 +74,11 @@ def Recommend(user_id, train, W, K=3):
 #            rank[j].reason[i] = pi * wij
 #    return rank
 
-def Recommendation(users, train, W, K=3):
+def Recommendation(users, train, W, top, K=3):
     result = dict()
     for user in users:
         rank = Recommend(user, train, W, K)
         R = sorted(rank.items(), key=operator.itemgetter(1),
-                   reverse=True)
+                   reverse=True)[:top]
         result[user] = R
     return result

@@ -62,18 +62,21 @@ def transform(oriData):
     return ret
 
 
-def output(result):
+def output(train, test, result):
+
     with open('output.txt', 'w') as f:
         f.write(json.dumps(result, indent=2))
-
     f.close()
+
+    print("Recall:{0}".format(Evaluation.Recall(train, test, result)))
+    print("Precision:{0}".format(Evaluation.Precision(train, test, result)))
 
 
 if __name__ == '__main__':
-    data = readData('movielens/ua.base')
+    data = readData('movielens/ub.base')
     train = transform(data)
 
-    data = readData('movielens/ua.test')
+    data = readData('movielens/ub.test')
     test = transform(data)
 
     numFlod = 5
@@ -99,31 +102,45 @@ if __name__ == '__main__':
  #       rank = UserCF.Recommend('1',train,W)
   #      result = UserCF.Recommendation(test.keys(), train, W)
 
-    # W = UserCF_IIF.UserSimilarity(train)
-    # rank = UserCF_IIF.Recommend('1', train, W)
-    # print(sorted(rank.items(), key=operator.itemgetter(1), reverse=True))
-    # result = UserCF_IIF.Recommendation(test.keys(), train, W)
-    # print({k: result[k] for k in list(result)[:2]})
-
-#        W = ItemCF.ItemSimilarity(train)
- #       rank = ItemCF.Recommend('1',train,W)
-  #      result =  ItemCF_IUF.Recommendation(test.keys(),train, W)
-
     # W = ItemTimeCF.ItemSimilarity(train)
     # rank = ItemTimeCF.Recommend('1', train, W)
     # print(sorted(rank.items(), key=operator.itemgetter(1), reverse=True))
 
-    W = UserTimeCF.Similarity(train)
-    # rank = UserTimeCF.Recommend('1', train, W)
-    # rank = ItemTimeCF.Recommend('4', train, W)
-    # print(len(rank))
-    # print(sorted(rank.items(), key=operator.itemgetter(1), reverse=True))
+    # W = UserCF.Similarity(train)
 
-    result = UserCF_IIF.Recommendation(test.keys(), train, W)
-    print(Evaluation.Recall(train, test, result))
-    print(Evaluation.Precision(train, test, result))
-    # print(len(result))
-    output(result)
+    # result = UserCF.Recommendation(test.keys(), train, W, 10, 80)
+    # print(Evaluation.Recall(train, test, result))
+    # print(Evaluation.Precision(train, test, result))
+    # output(result)
+
+    # result = ItemCF.Recommendation(test.keys(), train, W, 10, 3)
+    # print(Evaluation.Recall(train, test, result))
+    # print(Evaluation.Precision(train, test, result))
+    # output(result)
+
+    # W = UserCF_IIF.Similarity(train)
+    # result = UserCF_IIF.Recommendation(test.keys(), train, W, 10, 80)
+    # print(Evaluation.Recall(train, test, result))
+    # print(Evaluation.Precision(train, test, result))
+    # output(result)
+
+    # W = UserTimeCF.Similarity(train)
+    # result = UserTimeCF.Recommendation(test.keys(), train, W, 10, 80)
+    # output(train, test, result)
+
+##################################################################
+
+    W = ItemCF.Similarity(train)
+    result = ItemCF.Recommendation(test.keys(), train, W, 20, 10)
+    output(train, test, result)
+
+    W = ItemCF_IUF.Similarity(train)
+    result = ItemCF_IUF.Recommendation(test.keys(), train, W, 20, 10)
+    output(train, test, result)
+
+    W = ItemTimeCF.Similarity(train)
+    result = ItemTimeCF.Recommendation(test.keys(), train, W, 20, 10)
+    output(train, test, result)
 
     #     [P, Q] = LFM.LatentFactorModel(train, 100, 30, 0.02, 0.01)
     #     rank = LFM.Recommend('2', train, P, Q)

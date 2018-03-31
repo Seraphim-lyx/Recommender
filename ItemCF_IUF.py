@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 """
-Created on Wed Jan  3 09:58:20 2018
 
 @author: lanlandetian
 """
@@ -29,6 +28,10 @@ def Similarity(train):
     for i, related_items in C.items():
         for j, cij in related_items.items():
             W[i][j] = cij / math.sqrt(N[i] * N[j])
+        m = max(W[i].values())
+
+        for j in W[i].keys():
+            W[i][j] = W[i][j] / m
     return W
 
 
@@ -65,11 +68,11 @@ def Recommend(user_id, train, W, K=80):
 #    return rank
 
 
-def Recommendation(users, train, W, K=3):
+def Recommendation(users, train, W, top, K=3):
     result = dict()
     for user in users:
         rank = Recommend(user, train, W, K)
         R = sorted(rank.items(), key=operator.itemgetter(1),
-                   reverse=True)
+                   reverse=True)[:top]
         result[user] = R
     return result
