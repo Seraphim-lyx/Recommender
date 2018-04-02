@@ -59,6 +59,7 @@ def Recommend(user, train, W, K=80):
 def Recommendation(users, train, W, top, K=80):
     result = dict()
     for user in users:
+        print(user)
         rank = Recommend(user, train, W, K)
         R = sorted(rank.items(), key=operator.itemgetter(1),
                    reverse=True)[:top]

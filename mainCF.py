@@ -15,9 +15,12 @@ import Evaluation
 import LFM
 import operator
 import json
-
-
+import matplotlib.pyplot as plt
+import matplotlib.ticker as mtick
 import imp
+from pylab import *
+
+imp.reload(GeoCF)
 imp.reload(UserCF)
 imp.reload(UserCF_IIF)
 imp.reload(UserTimeCF)
@@ -26,7 +29,7 @@ imp.reload(ItemCF_IUF)
 imp.reload(ItemTimeCF)
 imp.reload(Evaluation)
 imp.reload(LFM)
-imp.reload(GeoCF)
+
 
 
 def readData(filename):
@@ -64,13 +67,40 @@ def transform(oriData):
 
 def output(train, test, result):
 
-    with open('output.txt', 'w') as f:
-        f.write(json.dumps(result, indent=2))
-    f.close()
+    # with open('output.txt', 'w') as f:
+    #     f.write(json.dumps(result, indent=2))
+    # f.close()
+    recall = Evaluation.Recall(train, test, result) * 100
+    precision = Evaluation.Precision(train, test, result) * 100
+    print("Recall:{0}".format(recall))
+    print("Precision:{0}".format(precision))
+    return recall, precision 
 
-    print("Recall:{0}".format(Evaluation.Recall(train, test, result)))
-    print("Precision:{0}".format(Evaluation.Precision(train, test, result)))
+def plot(list_, color):
+    
+    k = ['10', '20', '40', '80', '160']
+    ax = plt.subplot()
+    ax.yaxis.set_major_formatter(mtick.PercentFormatter())
+    plt.xticks(arange(len(k)),k)
 
+    plt.plot(list_, color, label=c.__dict__['__name__'])
+    plt.xlabel('K')
+    plt.ylabel('Accuracy')
+
+def getEvaluation(c, train, test):
+    rlist = []
+    plist = []
+    k = ['10', '20', '40', '80', '160']
+    for i in k:
+        r, p = getResult(c, train, test, int(i))
+        rlist.append(r)
+        plist.append(p)
+    return rlist, plist
+
+def getResult(c, train, test, k):
+    W = c.Similarity(train)
+    result = c.Recommendation(test.keys(), train, W, 5, k)
+    return output(train, test, result)
 
 if __name__ == '__main__':
     data = readData('movielens/ub.base')
@@ -98,9 +128,7 @@ if __name__ == '__main__':
     # test = transform(oriTest)
     # print(count)
     # print(test)
-#        W = UserCF.UserSimilarity(train)
- #       rank = UserCF.Recommend('1',train,W)
-  #      result = UserCF.Recommendation(test.keys(), train, W)
+
 
     # W = ItemTimeCF.ItemSimilarity(train)
     # rank = ItemTimeCF.Recommend('1', train, W)
@@ -109,9 +137,8 @@ if __name__ == '__main__':
     # W = UserCF.Similarity(train)
 
     # result = UserCF.Recommendation(test.keys(), train, W, 10, 80)
-    # print(Evaluation.Recall(train, test, result))
-    # print(Evaluation.Precision(train, test, result))
-    # output(result)
+
+    # output(train, test, result)
 
     # result = ItemCF.Recommendation(test.keys(), train, W, 10, 3)
     # print(Evaluation.Recall(train, test, result))
@@ -125,22 +152,35 @@ if __name__ == '__main__':
     # output(result)
 
     # W = UserTimeCF.Similarity(train)
-    # result = UserTimeCF.Recommendation(test.keys(), train, W, 10, 80)
+    # result = UserTimeCF.Recommendation(test.keys(), train, W, 5, 80)
     # output(train, test, result)
-
+    k = ['10', '20', '40', '80', '160']
+    obj = GeoCF.GeoCF(ItemTimeCF)
+    result = obj.recommendation(test.keys(), train, 5, 80)
+    output(train, test, result)
 ##################################################################
 
-    W = ItemCF.Similarity(train)
-    result = ItemCF.Recommendation(test.keys(), train, W, 20, 10)
-    output(train, test, result)
+    # W = ItemCF.Similarity(train)
+    # result = ItemCF.Recommendation(test.keys(), train, W, 5, 10)
+    # output(train, test, result)
 
-    W = ItemCF_IUF.Similarity(train)
-    result = ItemCF_IUF.Recommendation(test.keys(), train, W, 20, 10)
-    output(train, test, result)
+    # W = ItemCF_IUF.Similarity(train)
+    # result = ItemCF_IUF.Recommendation(test.keys(), train, W, 5, 10)
+    # output(train, test, result)
 
-    W = ItemTimeCF.Similarity(train)
-    result = ItemTimeCF.Recommendation(test.keys(), train, W, 20, 10)
-    output(train, test, result)
+    # W = ItemTimeCF.Similarity(train)
+    # result = ItemTimeCF.Recommendation(test.keys(), train, W, 5, 10)
+    # output(train, test, result)
+    
+    
+    # r, p = getEvaluation(ItemCF, train, test)
+    # plot(r, 'b-o')
+    # plot(ItemCF_IUF, train, test, 'g-o')
+    # plot(ItemTimeCF, train, test, 'r-o')
+    # leg = plt.legend(loc='best', ncol=2, mode="expand",
+    #                      shadow=True, fancybox=True)
+    # leg.get_frame().set_alpha(0.5)
+    # plt.show()
 
     #     [P, Q] = LFM.LatentFactorModel(train, 100, 30, 0.02, 0.01)
     #     rank = LFM.Recommend('2', train, P, Q)
@@ -165,5 +205,6 @@ if __name__ == '__main__':
     # print('Done!')
 
     # obj = GeoCF.GeoCF(UserTimeCF)
-    # rank = obj.recommend('1', train)
+    # rank = obj.recommend('1', train, 80)
     # print(sorted(rank.items(), key=operator.itemgetter(1), reverse=True))
+    # print(sorted(rank))

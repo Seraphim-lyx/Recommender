@@ -21,7 +21,7 @@ def GetRecommendation(result, user, N=5000):
 def Recall(train, test, result, N=5000):
     hit = 0
     all = 0
-    for user in test.keys():
+    for user in train.keys():
         tu = test[user]
         rank = GetRecommendation(result, user, N)
         for item, pui in rank:
@@ -34,7 +34,7 @@ def Recall(train, test, result, N=5000):
 def Precision(train, test, result, N=5000):
     hit = 0
     all = 0
-    for user in test.keys():
+    for user in train.keys():
         tu = test[user]
         rank = GetRecommendation(result, user, N)
         for item, pui in rank:
@@ -68,7 +68,7 @@ def Popularity(train, test, result, N=5000):
 
     ret = 0
     n = 0
-    for user in test.keys():
+    for user in train.keys():
         rank = GetRecommendation(result, user, N)
         for item, pui in rank:
             ret += math.log(1 + item_popularity[item])

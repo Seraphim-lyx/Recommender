@@ -42,27 +42,30 @@ class GeoCF(object):
     def geoCalculate(self, weight):
         pass
 
-    def recommend(self, user, train, top, k):
+    def recommend(self, user, train, k):
+        weight = [0.2,0.3,0.4]
         ranklist = {}
-        for i in range(4):
+        for i in range(len(weight)):
 
-            zipList = self.getZipList(user, i)
+            zipList = self.getZipList(user, i+1)
             subtrain = self.getSubTrain(train, zipList)
             W = self.algo.Similarity(subtrain)
-            rank = self.algo.Recommend(user, subtrain, W, top, k)
+            rank = self.algo.Recommend(user, subtrain, W, k)
+            rank = {k:v*weight[i] for k, v in rank.items()}
             ranklist = self.rankCombine(ranklist, rank)
         return ranklist
 
     def recommendation(self, users, train, top=10, k=3):
         result = {}
-        for u in users.keys():
-            ranklist = self.recommend(u, train, top, k)
+        for u in users:
+            print(u)
+            ranklist = self.recommend(u, train, k)
             result[u] = sorted(ranklist.items(), key=operator.itemgetter(1),
                                reverse=True)[:top]
         return result
 
 
-# obj = GeoCF()
+# obj = GeoCF(UserTimeCF)
 # obj.readZip('movielens/u.user')
 # print(sorted(obj.uzip))
 # print(len(obj.getZipList('1', 0)))
