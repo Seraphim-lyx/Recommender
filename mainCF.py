@@ -67,25 +67,22 @@ def transform(oriData):
 
 def output(train, test, result):
 
-    # with open('output.txt', 'w') as f:
-    #     f.write(json.dumps(result, indent=2))
-    # f.close()
     recall = Evaluation.Recall(train, test, result) * 100
     precision = Evaluation.Precision(train, test, result) * 100
     print("Recall:{0}".format(recall))
     print("Precision:{0}".format(precision))
     return recall, precision 
 
-def plot(list_, color):
+def plot(list_, color, c):
     
     k = ['10', '20', '40', '80', '160']
     ax = plt.subplot()
     ax.yaxis.set_major_formatter(mtick.PercentFormatter())
     plt.xticks(arange(len(k)),k)
 
-    plt.plot(list_, color, label=c.__dict__['__name__'])
+    plt.plot(list_, color, label=c)
     plt.xlabel('K')
-    plt.ylabel('Accuracy')
+    plt.ylabel('Precision')
 
 def getEvaluation(c, train, test):
     rlist = []
@@ -154,10 +151,26 @@ if __name__ == '__main__':
     # W = UserTimeCF.Similarity(train)
     # result = UserTimeCF.Recommendation(test.keys(), train, W, 5, 80)
     # output(train, test, result)
-    k = ['10', '20', '40', '80', '160']
-    obj = GeoCF.GeoCF(ItemTimeCF)
-    result = obj.recommendation(test.keys(), train, 5, 80)
-    output(train, test, result)
+    # f = open('output.txt','w')
+    # k = ['10', '20', '40', '80', '160']
+    # k = ['10']
+    # obj = GeoCF.GeoCF(ItemTimeCF)
+    # for i in k:
+    #     result = obj.recommendation(test.keys(), train, 5, int(i))
+    #     r,p = output(train, test, result)
+    #     f.writelines('k={0}:\n'.format(i))
+    #     f.writelines('recall:{0}\n'.format(r))
+    #     f.writelines('precision:{0}\n'.format(p))
+
+    # f.writelines('##########\n')
+    # obj = GeoCF.GeoCF(UserTimeCF)
+    # for i in k:
+    #     result = obj.recommendation(test.keys(), train, 5, int(i))
+    #     r,p = output(train, test, result)
+    #     f.writelines('k={0}:\n'.format(i))
+    #     f.writelines('recall:{0}\n'.format(r))
+    #     f.writelines('precision:{0}\n'.format(p))
+    # f.close()
 ##################################################################
 
     # W = ItemCF.Similarity(train)
@@ -174,13 +187,21 @@ if __name__ == '__main__':
     
     
     # r, p = getEvaluation(ItemCF, train, test)
-    # plot(r, 'b-o')
-    # plot(ItemCF_IUF, train, test, 'g-o')
-    # plot(ItemTimeCF, train, test, 'r-o')
-    # leg = plt.legend(loc='best', ncol=2, mode="expand",
-    #                      shadow=True, fancybox=True)
-    # leg.get_frame().set_alpha(0.5)
-    # plt.show()
+    geoTime = [20.618336886993603, 22.068230277185503, 21.727078891257996, 20.533049040511727, 19.78678038379531]
+    geoItem = [16.172043010752688, 17.124463519313306, 16.773504273504273, 15.940170940170939, 15.437100213219615]
+    plot(getEvaluation(UserCF, train, test)[1], 'b-o', 'UserCF')
+    plot(getEvaluation(UserCF_IIF, train, test)[1], 'g-o', 'UserCF_IIF')
+    plot(getEvaluation(UserTimeCF, train, test)[1], 'r-o', 'UserTimeCF')
+    plot(geoTime, 'c-o', 'GeoTimeCF')
+    plot(getEvaluation(ItemCF, train, test)[1], 'm-^', 'ItemCF')
+    plot(getEvaluation(ItemCF_IUF, train, test)[1], 'y-^', 'ItemCF_IUF')
+    plot(getEvaluation(ItemTimeCF, train, test)[1], 'k-^', 'ItemTimeCF')
+    plot(geoItem, 'b-^', 'GeoItemCF')
+
+    leg = plt.legend(loc='best', ncol=2, mode="expand",
+                         shadow=True, fancybox=True)
+    leg.get_frame().set_alpha(0.5)
+    plt.show()
 
     #     [P, Q] = LFM.LatentFactorModel(train, 100, 30, 0.02, 0.01)
     #     rank = LFM.Recommend('2', train, P, Q)

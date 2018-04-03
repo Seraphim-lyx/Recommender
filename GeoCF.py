@@ -43,7 +43,7 @@ class GeoCF(object):
         pass
 
     def recommend(self, user, train, k):
-        weight = [0.2,0.3,0.4]
+        weight = [0.2,0.3,0.5]
         ranklist = {}
         for i in range(len(weight)):
 
