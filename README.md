@@ -1,12 +1,12 @@
 # RecSys。
-数据集使用的是MovieLen中大小为100K的数据集。</br>
-UserCF:基于用户的算法</br>
-UserCF_IIF：改进的基于用户的算法</br>
-UserTimeCF:基于时间上下文的用户协同</br>
-ItemCF：基于物品的算法</br>
-ItemCF_IUF：改进的基于物品的算法</br>
-ItemTimeCF:基于时间上下文的物品协同</br>
-LFM:隐因子模型算法 </br>
-Evaluation：评价指标</br>
-mainCF:主函数，读取数据和测试</br>
+The applied DataSet is the "MovieLen" for around 100K
+UserCF:User-based collaborative filtering</br>
+UserCF_IIF：User-based collaborative filtering - Inverse Item Frequency</br>
+UserTimeCF:User-based collaborative filtering with time context</br>
+ItemCF：Item-based collaborative filtering</br>
+ItemCF_IUF：Item-based collaborative filtering - Inverse User Frequency</br>
+ItemTimeCF:Item-based collaborative filtering with time context</br>
+LFM:Latent factor model </br>
+Evaluation：Evaluation Algorithm</br>
+mainCF:Main Function</br>
 
